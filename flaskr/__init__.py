@@ -54,9 +54,16 @@ def create_app(test_config=None):
 
     @app.route('/plants')
     def get_plants():
+        search = request.args.get('search')
+        plants = []
 
-        # plants = Plant.query.all()
-        plants = Plant.query.order_by(Plant.id).all()
+        if search:
+            plants = Plant.query.order_by(Plant.id).filter(
+                Plant.name.ilike("%{}%".format(search))
+            ).all()
+        else:
+            # plants = Plant.query.all()
+            plants = Plant.query.order_by(Plant.id).all()
 
         return jsonify({
             'success': True,

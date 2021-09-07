@@ -35,6 +35,24 @@ class PlantTestCase(unittest.TestCase):
         self.assertTrue(data["total_plants"])
         self.assertTrue(len(data["plants"]))
 
+    def test_get_plant_search_with_results(self):
+        res = self.client().post("/plants?search=Hydrangea")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["total_plants"])
+        self.assertEqual(len(data["plants"]), 1)
+
+    def test_get_book_search_without_results(self):
+        res = self.client().post("/books?search=non_existant_plant")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(data["total_books"], 0)
+        self.assertEqual(len(data["books"]), 0)
+
     def test_404_sent_requesting_beyond_valid_page(self):
         res = self.client().get("/plants?page=1000", json={"rating": 1})
         data = json.loads(res.data)
